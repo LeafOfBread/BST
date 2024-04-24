@@ -40,6 +40,30 @@ tree* insert(tree* root, int data)
     return root;
 }
 
+int minimum(tree* root)
+{
+    if (root == NULL) cout << "Tree is empty!";
+    else if (root->left == NULL) return root->numbers;
+    return minimum(root->left);
+}
+
+int maximum(tree* root)
+{
+    if (root == NULL) cout << "Tree is empty!";
+    else if (root->right == NULL) return root->numbers;
+    return maximum(root->right);
+}
+
+tree* rightRotate(tree* root)
+{
+    //root->
+}
+
+int depth(tree* root){
+    if (root == NULL) return 0;
+    return depth(root->left) + depth(root->right) +1;
+}
+
 bool search(tree* root, int data)
 {
     if (root==NULL) return false;
@@ -51,6 +75,7 @@ bool search(tree* root, int data)
 int main()
 {
     tree* root = NULL;
+
     ifstream inputFile("bst.txt");
     if (!inputFile)
     {
@@ -60,11 +85,13 @@ int main()
 
     int num;
 
-    while (inputFile >> num)
-    {
-        root = insert(root, num);
-    }
+    while (inputFile >> num) root = insert(root, num);
     inputFile.close();
+
+    cout << "Lowest Number in Tree: " << minimum(root) << "\n";
+    cout << "Highest Number in Tree: " << maximum(root) << "\n\n";
+
+    if (depth(root->left)-depth(root->right) >= 2 || depth(root->left)-depth(root->right) <= -2) cout << "AVL Violation!!\nDepth difference: " << depth(root->left)-depth(root->right) << "\n";
 
     cout << "What Integer would you like to search for?\n";
     int input;
