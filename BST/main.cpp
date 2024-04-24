@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -59,9 +60,14 @@ tree* rightRotate(tree* root)
     //root->
 }
 
-int depth(tree* root){
+int nodeCounter(tree* root){
     if (root == NULL) return 0;
-    return depth(root->left) + depth(root->right) +1;
+    return nodeCounter(root->left) + nodeCounter(root->right) +1;
+}
+
+int sum(tree* root){
+    if (root == NULL) return 0;
+    return sum(root->left) + sum(root->right) + root->numbers;
 }
 
 bool search(tree* root, int data)
@@ -88,10 +94,11 @@ int main()
     while (inputFile >> num) root = insert(root, num);
     inputFile.close();
 
-    cout << "Lowest Number in Tree: " << minimum(root) << "\n";
-    cout << "Highest Number in Tree: " << maximum(root) << "\n\n";
+    double avg = (double)sum(root)/(double)nodeCounter(root); //alter sind doubles retarded in c++, wtf..
 
-    if (depth(root->left)-depth(root->right) >= 2 || depth(root->left)-depth(root->right) <= -2) cout << "AVL Violation!!\nDepth difference: " << depth(root->left)-depth(root->right) << "\n";
+    cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n";
+
+    std::cout << std::fixed << std::setprecision(2) << avg << std::endl;
 
     cout << "What Integer would you like to search for?\n";
     int input;
