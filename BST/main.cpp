@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ struct tree
     tree* right;
 };
 
-tree* newtree(int data)
+tree* newtree(int data) //neuen baum anlegen
 {
     tree* newNode = new tree();
     newNode->numbers = data;
@@ -55,17 +56,14 @@ int maximum(tree* root)
     return maximum(root->right);
 }
 
-tree* rightRotate(tree* root)
+int nodeCounter(tree* root)
 {
-    //root->
-}
-
-int nodeCounter(tree* root){
     if (root == NULL) return 0;
     return nodeCounter(root->left) + nodeCounter(root->right) +1;
 }
 
-int sum(tree* root){
+int sum(tree* root)
+{
     if (root == NULL) return 0;
     return sum(root->left) + sum(root->right) + root->numbers;
 }
@@ -78,6 +76,23 @@ bool search(tree* root, int data)
     else return search(root->right, data);
 }
 
+void deleteTree(tree* root)
+{
+    if (root != NULL)
+    {
+        deleteTree(root->left);
+        deleteTree(root->right);
+        delete root;
+    }
+}
+
+int depth(tree* root){
+    if (root == NULL) return 0;
+    int left = depth(root->left);
+    int right = depth(root->right);
+    return max(left, right) +1;
+}
+
 int main()
 {
     tree* root = NULL;
@@ -88,23 +103,24 @@ int main()
         cout << "File could not be read!\n";
         return 1;
     }
-
     int num;
-
-    while (inputFile >> num) root = insert(root, num);
+    while (inputFile >> num){
+        root = insert(root, num);
+    }
     inputFile.close();
 
     double avg = (double)sum(root)/(double)nodeCounter(root); //alter sind doubles retarded in c++, wtf..
 
     cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n";
+    if (depth(root->left)-depth(root->right)>=2 || depth(root->left)-depth(root->right) <=-2) cout << "AVL Balance Violation!!\n";
 
-    std::cout << std::fixed << std::setprecision(2) << avg << std::endl;
-
-    cout << "What Integer would you like to search for?\n";
+    /*cout << "What Integer would you like to search for?\n"; //testing
     int input;
     cin >> input;
 
     if (search(root, input)==true) cout << "Integer has been found!";
-    else cout << "Integer has not been found!";
+    else cout << "Integer has not been found!";*/
+
+    deleteTree(root);
     return 0;
 }

@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1714058777 source:c:\users\besitzer\documents\github\bst\bst\main.cpp
+	<iostream>
+	<fstream>
+	<iomanip>
+	<cmath>
+
