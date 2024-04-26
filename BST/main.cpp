@@ -24,21 +24,10 @@ tree* newtree(int data) //neuen baum anlegen
 
 tree* insert(tree* root, int data)
 {
-    if (root == NULL)
-    {
-        root = newtree(data);
-        cout << "new node initialized\n";
-    }
-    else if (data <= root->numbers)
-    {
-        cout << "left\n";
-        root->left = insert(root->left, data);
-    }
-    else if (data > root->numbers)
-    {
-        cout << "right\n";
-        root->right = insert(root->right, data);
-    }
+    if (root == nullptr) root = newtree(data);
+    else if (data < root->numbers) root->left = insert(root->left, data);
+    else if (data > root->numbers) root->right = insert(root->right, data);
+    else if (data == root->numbers) return nullptr;
     return root;
 }
 
@@ -72,7 +61,7 @@ bool search(tree* root, int data)
 {
     if (root==NULL) return false;
     else if (root->numbers == data) return true;
-    else if (data <= root->numbers) return search(root->left, data);
+    else if (data < root->numbers) return search(root->left, data);
     else return search(root->right, data);
 }
 
@@ -86,7 +75,8 @@ void deleteTree(tree* root)
     }
 }
 
-int depth(tree* root){
+int depth(tree* root)
+{
     if (root == NULL) return 0;
     int left = depth(root->left);
     int right = depth(root->right);
@@ -95,7 +85,7 @@ int depth(tree* root){
 
 int main()
 {
-    tree* root = NULL;
+    tree* root = nullptr;
 
     ifstream inputFile("bst.txt");
     if (!inputFile)
@@ -104,22 +94,21 @@ int main()
         return 1;
     }
     int num;
-    while (inputFile >> num){
+    while (inputFile >> num)
+    {
         root = insert(root, num);
+        int depthCheck = depth(root->right)-depth(root->left);
+        if (depthCheck>=2 || depthCheck <=-2) cout << "bal(" << num << ") = " << depthCheck << " (AVL Violation!)\n";
+        else cout << "bal(" << num << ") = " << depthCheck << "\n";
     }
     inputFile.close();
+    int depthCheck = depth(root->right)-depth(root->left);
 
     double avg = (double)sum(root)/(double)nodeCounter(root); //alter sind doubles retarded in c++, wtf..
-
+    if (depthCheck <2 && depthCheck >-2) cout << "AVL: yes\n";
+    else cout << "AVL: no\n";
     cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n";
-    if (depth(root->left)-depth(root->right)>=2 || depth(root->left)-depth(root->right) <=-2) cout << "AVL Balance Violation!!\n";
 
-    /*cout << "What Integer would you like to search for?\n"; //testing
-    int input;
-    cin >> input;
-
-    if (search(root, input)==true) cout << "Integer has been found!";
-    else cout << "Integer has not been found!";*/
 
     deleteTree(root);
     return 0;
