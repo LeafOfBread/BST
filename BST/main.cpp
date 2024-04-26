@@ -57,12 +57,42 @@ int sum(tree* root)
     return sum(root->left) + sum(root->right) + root->numbers;
 }
 
-bool searchTree(tree* root, int data)
+bool searchTree(tree* root, int data, bool* searchCheck)
 {
-    if (root==NULL) return false;
-    else if (root->numbers == data) return true;
-    else if (data < root->numbers) return searchTree(root->left, data);
-    else return searchTree(root->right, data);
+    if (root==NULL)
+    {
+        cout << data << " not found!\n";
+        *searchCheck = false;
+        return false;
+    }
+    else if (root->numbers == data)
+    {
+        cout << data << " found ";
+        *searchCheck = true;
+        return true;
+    }
+    else if (data < root->numbers) return searchTree(root->left, data, searchCheck);
+    else return searchTree(root->right, data, searchCheck);
+}
+
+void path(tree* root, int data)
+{
+    if (root==NULL) cout << "not present!\n";
+    else if (root->numbers == data)
+    {
+        cout << root->numbers << "\n";
+        return;
+    }
+    else if (data < root->numbers)
+    {
+        cout << root->numbers << ", ";
+        return path(root->left, data);
+    }
+    else
+    {
+        cout << root->numbers << ", ";
+        return path(root->right, data);
+    }
 }
 
 void deleteTree(tree* root)
@@ -86,6 +116,7 @@ int depth(tree* root)
 int main()
 {
     tree* root = nullptr;
+    bool searchCheck;
 
     ifstream inputFile("bst.txt");
     if (!inputFile)
@@ -107,9 +138,21 @@ int main()
     double avg = (double)sum(root)/(double)nodeCounter(root); //alter sind doubles retarded in c++, wtf..
     if (depthCheck <2 && depthCheck >-2) cout << "AVL: yes\n";
     else cout << "AVL: no\n";
-    cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n";
+    cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n\n\n";
 
-
+    ifstream searchFile("bstsearch.txt");
+    if (!searchFile)
+    {
+        cout << "File could not be read!\n";
+        return 2;
+    }
+    int intSearch;
+    while (searchFile >> intSearch)
+    {
+        searchTree(root, intSearch, &searchCheck);
+        if (searchCheck == true) path(root, intSearch);
+    }
+    searchFile.close();
     deleteTree(root);
     return 0;
 }
