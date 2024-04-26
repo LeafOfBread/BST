@@ -33,14 +33,14 @@ tree* insertTree(tree* root, int data)
 
 int minimum(tree* root)
 {
-    if (root == NULL) cout << "Tree is empty!";
+    if (root == NULL) cout << "Tree is empty!\n";
     else if (root->left == NULL) return root->numbers;
     return minimum(root->left);
 }
 
 int maximum(tree* root)
 {
-    if (root == NULL) cout << "Tree is empty!";
+    if (root == NULL) cout << "Tree is empty!\n";
     else if (root->right == NULL) return root->numbers;
     return maximum(root->right);
 }
@@ -113,9 +113,37 @@ int depth(tree* root)
     return max(left, right) +1;
 }
 
+bool areIdentical(tree* root, tree* subTree)
+{
+    if (root == NULL) return true;
+    if (subTree == NULL) return false;
+    return (root->numbers == subTree->numbers && areIdentical(root->left, subTree->left) && areIdentical(root->right, subTree->right));
+}
+
+bool isSubtree(tree* root, tree* subTree)
+{
+    if (subTree == NULL)
+    {
+        cout << "1 ";
+        return true;
+    }
+    if (root == NULL)
+    {
+        cout << "2 ";
+        return false;
+    }
+    if (areIdentical(root, subTree)) {
+        cout << "3 ";
+        return true;
+    }
+    cout << "h ";
+    return isSubtree(root->left, subTree) || isSubtree(root->right, subTree);
+}
+
 int main()
 {
     tree* root = nullptr;
+    tree* subTree = nullptr;
     bool searchCheck;
 
     ifstream inputFile("bst.txt");
@@ -149,10 +177,15 @@ int main()
     int intSearch;
     while (searchFile >> intSearch)
     {
+        subTree = insertTree(subTree, intSearch);
         searchTree(root, intSearch, &searchCheck);
         if (searchCheck == true) path(root, intSearch);
     }
     searchFile.close();
+
+    if (isSubtree(root, subTree)) cout << "\nSubtree found.\n";
+    else cout << "\nSubtree not found.\n";
     deleteTree(root);
+    deleteTree(subTree);
     return 0;
 }
