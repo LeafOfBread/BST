@@ -113,37 +113,43 @@ int depth(tree* root)
     return max(left, right) +1;
 }
 
-bool areIdentical(tree* root, tree* subTree)
+bool areIdentical(tree* root1, tree* root2)
 {
-    if (root == NULL) return true;
-    if (subTree == NULL) return false;
-    return (root->numbers == subTree->numbers && areIdentical(root->left, subTree->left) && areIdentical(root->right, subTree->right));
+    if (root1 == NULL && root2 == NULL) return true;
+
+    if (root1 == NULL || root2 == NULL) return false;
+
+    return (root1->numbers == root2->numbers
+            && areIdentical(root1->left, root2->left)
+            && areIdentical(root1->right, root2->right));
 }
 
-bool isSubtree(tree* root, tree* subTree)
+bool isSubtree(tree* T, tree* S)
 {
-    if (subTree == NULL)
-    {
-        cout << "1 ";
-        return true;
-    }
-    if (root == NULL)
-    {
-        cout << "2 ";
-        return false;
-    }
-    if (areIdentical(root, subTree)) {
-        cout << "3 ";
-        return true;
-    }
-    cout << "h ";
-    return isSubtree(root->left, subTree) || isSubtree(root->right, subTree);
+    if (S == NULL) return true;
+    if (T == NULL) return false;
+    if (areIdentical(T, S)) return true;
+    return isSubtree(T->left, S) || isSubtree(T->right, S);
+}
+
+void printTree(tree* root)
+{
+    if (root == nullptr)
+        return;
+
+    // Traverse left subtree
+    printTree(root->right);
+
+    // Print current node
+    cout << root->numbers << " ";
+
+    // Traverse right subtree
+    printTree(root->left);
 }
 
 int main()
 {
     tree* root = nullptr;
-    tree* subTree = nullptr;
     bool searchCheck;
 
     ifstream inputFile("bst.txt");
@@ -174,14 +180,21 @@ int main()
         cout << "File could not be read!\n";
         return 2;
     }
+    tree* subTree = nullptr;
     int intSearch;
     while (searchFile >> intSearch)
     {
-        subTree = insertTree(subTree, intSearch);
         searchTree(root, intSearch, &searchCheck);
         if (searchCheck == true) path(root, intSearch);
+        subTree = insertTree(subTree, intSearch);
     }
     searchFile.close();
+    cout << "Contents of Root: ";
+    printTree(root);
+    cout << "\n";
+    cout << "Contents of Subtree: ";
+    printTree(subTree);
+    cout << "\n";
 
     if (isSubtree(root, subTree)) cout << "\nSubtree found.\n";
     else cout << "\nSubtree not found.\n";
