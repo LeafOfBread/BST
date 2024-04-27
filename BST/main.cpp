@@ -24,10 +24,11 @@ tree* newtree(int data) //neuen baum anlegen
 
 tree* insertTree(tree* root, int data)
 {
-    if (root == nullptr) root = newtree(data);
-    else if (data < root->numbers) root->left = insertTree(root->left, data);
-    else if (data > root->numbers) root->right = insertTree(root->right, data);
-    else if (data == root->numbers) return nullptr;
+    if (root == nullptr) root = newtree(data);  //wenn root leer, neuen baum anlegen
+    if (root->numbers != data){
+    if (data < root->numbers) root->left = insertTree(root->left, data);   //links weiter
+    else if (data > root->numbers) root->right = insertTree(root->right, data); //rechts weiter
+    }
     return root;
 }
 
@@ -113,35 +114,12 @@ int depth(tree* root)
     return max(left, right) +1;
 }
 
-bool areIdentical(tree* root1, tree* root2)
-{
-    if (root1 == NULL && root2 == NULL) return true;
-
-    if (root1 == NULL || root2 == NULL) return false;
-
-    return (root1->numbers == root2->numbers
-            && areIdentical(root1->left, root2->left)
-            && areIdentical(root1->right, root2->right));
-}
-
-bool isSubtree(tree* T, tree* S)
-{
-    if (S == NULL) return true;
-    if (T == NULL) return false;
-    if (areIdentical(T, S)) return true;
-    return isSubtree(T->left, S) || isSubtree(T->right, S);
-}
 bool check_if_subtree(tree* Starting_Point,tree* End_Point)
 {
-    if(Starting_Point->numbers==End_Point->numbers&&Starting_Point!=NULL)
+    if(Starting_Point->numbers==End_Point->numbers&&Starting_Point!=NULL) return true;
+    if(Starting_Point->left==NULL&&Starting_Point->right==NULL) return false;
+    else
     {
-        return true;
-    }
-    if(Starting_Point->left==NULL&&Starting_Point->right==NULL)
-    {
-        return false;
-    }
-    else{
         return(check_if_subtree(Starting_Point->left,End_Point));
         return(check_if_subtree(Starting_Point->right,End_Point));
     }
@@ -151,16 +129,9 @@ bool check_if_subtree(tree* Starting_Point,tree* End_Point)
 
 void printTree(tree* root)
 {
-    if (root == nullptr)
-        return;
-
-    // Traverse left subtree
+    if (root == nullptr) return;
     printTree(root->right);
-
-    // Print current node
     cout << root->numbers << " ";
-
-    // Traverse right subtree
     printTree(root->left);
 }
 
@@ -169,7 +140,7 @@ int main()
     tree* root = nullptr;
     bool searchCheck;
 
-    ifstream inputFile("bst.txt");
+    ifstream inputFile("bst1.txt");
     if (!inputFile)
     {
         cout << "File could not be read!\n";
@@ -191,7 +162,7 @@ int main()
     else cout << "AVL: no\n";
     cout << "min: " << minimum(root) << ", max: " << maximum(root) << ", avg: " << std::fixed << std::setprecision(2) << avg << "\n\n\n";
 
-    ifstream searchFile("bstsearch.txt");
+    ifstream searchFile("bstsearch1.txt");
     if (!searchFile)
     {
         cout << "File could not be read!\n";
@@ -206,16 +177,22 @@ int main()
         subTree = insertTree(subTree, intSearch);
     }
     searchFile.close();
-    cout << "Contents of Root: ";
+
+    cout << "Contents of Root: "; //debugging
     printTree(root);
     cout << "\n";
     cout << "Contents of Subtree: ";
     printTree(subTree);
     cout << "\n";
-    if(check_if_subtree(root,subTree)){
-        cout<<"Subtree"<<endl;
+
+    if(check_if_subtree(root,subTree))
+    {
+        cout<<"\nSubtree found."<<endl;
     }
-    else{cout<<"no subtree"<<endl;}
+    else
+    {
+        cout<<"\nSubtree not found."<<endl;
+    }
 
     deleteTree(root);
     deleteTree(subTree);
