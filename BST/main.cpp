@@ -131,6 +131,23 @@ bool isSubtree(tree* T, tree* S)
     if (areIdentical(T, S)) return true;
     return isSubtree(T->left, S) || isSubtree(T->right, S);
 }
+bool check_if_subtree(tree* Starting_Point,tree* End_Point)
+{
+    if(Starting_Point->numbers==End_Point->numbers&&Starting_Point!=NULL)
+    {
+        return true;
+    }
+    if(Starting_Point->left==NULL&&Starting_Point->right==NULL)
+    {
+        return false;
+    }
+    else{
+        return(check_if_subtree(Starting_Point->left,End_Point));
+        return(check_if_subtree(Starting_Point->right,End_Point));
+    }
+
+
+}
 
 void printTree(tree* root)
 {
@@ -195,9 +212,11 @@ int main()
     cout << "Contents of Subtree: ";
     printTree(subTree);
     cout << "\n";
+    if(check_if_subtree(root,subTree)){
+        cout<<"Subtree"<<endl;
+    }
+    else{cout<<"no subtree"<<endl;}
 
-    if (isSubtree(root, subTree)) cout << "\nSubtree found.\n";
-    else cout << "\nSubtree not found.\n";
     deleteTree(root);
     deleteTree(subTree);
     return 0;
