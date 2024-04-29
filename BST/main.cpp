@@ -58,19 +58,19 @@ int sum(tree* root)
     return sum(root->left) + sum(root->right) + root->numbers;
 }
 
-bool searchTree(tree* root, int data, bool* searchCheck)
+void searchTree(tree* root, int data, bool* searchCheck)
 {   //falls null
     if (root==NULL)
     {
         cout << data << " not found!\n";
         *searchCheck = false;
-        return false;
+        return;
     }
     else if (root->numbers == data) //wenn zahlen uebereinstimmen, zahl gefunden
     {
         cout << data << " found ";
         *searchCheck = true;    //check auf true fuer path funktion
-        return true;
+        return;
     }
     else if (data < root->numbers) return searchTree(root->left, data, searchCheck); //falls kleiner, am linken node weitersuchen
     else return searchTree(root->right, data, searchCheck); //falls groesser, am rechten node weitersuchen
