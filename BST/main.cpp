@@ -58,7 +58,7 @@ int sum(tree* root)
     return sum(root->left) + sum(root->right) + root->numbers;
 }
 
-void searchTree(tree* root, int data, bool* searchCheck)
+void searchTree(tree* root, int data, bool* searchCheck, tree** Subtree_start)
 {   //falls null
     if (root==NULL)
     {
@@ -69,11 +69,12 @@ void searchTree(tree* root, int data, bool* searchCheck)
     else if (root->numbers == data) //wenn zahlen uebereinstimmen, zahl gefunden
     {
         cout << data << " found ";
+        *Subtree_start=root;
         *searchCheck = true;    //check auf true fuer path funktion
         return;
     }
-    else if (data < root->numbers) return searchTree(root->left, data, searchCheck); //falls kleiner, am linken node weitersuchen
-    else return searchTree(root->right, data, searchCheck); //falls groesser, am rechten node weitersuchen
+    else if (data < root->numbers) return searchTree(root->left, data, searchCheck, Subtree_start); //falls kleiner, am linken node weitersuchen
+    else return searchTree(root->right, data, searchCheck, Subtree_start); //falls groesser, am rechten node weitersuchen
 }
 
 void path(tree* root, int data)
@@ -116,12 +117,37 @@ int depth(tree* root)
 
 bool check_if_subtree(tree* Starting_Point,tree* End_Point)
 {
-    if(Starting_Point->numbers==End_Point->numbers&&Starting_Point!=NULL) return true;
-    if(Starting_Point->left==NULL&&Starting_Point->right==NULL) return false;
+    if(Starting_Point->numbers==End_Point->numbers&&Starting_Point!=NULL)
+    {
+        return true;
+        }
+
+    if(Starting_Point->left==NULL&&Starting_Point->right==NULL)
+    {
+        return false;
+    }
     else
     {   //links und rechts weiter checken
-        return(check_if_subtree(Starting_Point->left,End_Point));
-        return(check_if_subtree(Starting_Point->right,End_Point));
+
+
+        if(Starting_Point->numbers<End_Point->numbers)
+        {
+            if(Starting_Point->right==NULL)
+            {
+                return false;
+            }
+            return(check_if_subtree(Starting_Point->right,End_Point));
+        }
+
+        if(Starting_Point->numbers>End_Point->numbers)
+        {
+            if(Starting_Point->left==NULL)
+            {
+                return false;
+            }
+            return(check_if_subtree(Starting_Point->left,End_Point));
+        }
+
     }
 }
 
@@ -136,7 +162,7 @@ void printTree(tree* root)
 int main()
 {
     tree* root = nullptr;   //root initializen und auf null setzen
-
+    tree* Subtree_start[3] = {nullptr,nullptr,nullptr};
     ifstream inputFile("bst1.txt");
     if (!inputFile)
     {
@@ -166,14 +192,16 @@ int main()
         cout << "File could not be read!\n";
         return 2;
     }
-    tree* subTree = nullptr;    //neuer tree ist gleich null
     int intSearch;
+    int i=0;
     while (searchFile >> intSearch)
     {
-        searchTree(root, intSearch, &searchCheck);  //sucht ob integer im maintree vorhanden ist
+        searchTree(root, intSearch, &searchCheck, &Subtree_start[i]);  //sucht ob integer im maintree vorhanden ist
         if (searchCheck == true) path(root, intSearch); //output path
-        subTree = insertTree(subTree, intSearch);   //inserted value in neuen tree
+
+        i++;
     }
+
     searchFile.close();
 
     /*cout << "Contents of Root: "; //debugging
@@ -182,11 +210,32 @@ int main()
     cout << "Contents of Subtree: ";
     printTree(subTree);
     cout << "\n";*/
+    i=1;
+    bool subtreeFound=true;
 
-    if(check_if_subtree(root,subTree)) cout<<"\nSubtree found."<<endl;
-    else cout<<"\nSubtree not found."<<endl;
+    while(Subtree_start[i]!=NULL&&i<3)
+    {
+
+        if(check_if_subtree(Subtree_start[0],Subtree_start[i]))
+        {
+        }
+
+        else
+        {
+            subtreeFound=false;
+        }
+        i++;
+    }
+
+    if(subtreeFound)
+    {
+        cout<<"subtree found"<<endl;
+    }
+    else
+    {
+        cout<<"subtree not found"<<endl;
+    }
 
     deleteTree(root);   //trees wieder loeschen
-    deleteTree(subTree);
     return 0;
 }
